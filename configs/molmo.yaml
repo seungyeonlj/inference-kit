@@ -8,19 +8,27 @@ tensor_parallel_size: 1
 
 temperature: 0.0  # Temperature for sampling.
 
-# dataset
-dataset: "/workspace/language_model/data/all_data.json"
-dataset_split: test
-load_local_image: True
-image_folder: "/workspace/multimodal_rewardbench/data/"
+datasets:
+  - dataset_path: "./data/all_data.json"
+    dataset_name: "multimodal_rewardbench"
+    dataset_split: test
+    load_local_image: True
+    image_folder: "./data/"
+    swap: False
+  - dataset_path: "MMInstruction/VL-RewardBench"
+    dataset_name: "vl_rewardbench"
+    dataset_split: test
+    load_local_image: False    
+    swap: False
+
+num_prompts: 10
 modality: image
 
-swap: False
-
 seed: 123  # Set the seed when initializing `vllm.LLM`.
-num_prompts: 10
+
+time_generate: True
+
 data_chunk_size: 100
 start_idx: 0
-time_generate: True
 
 output_dir: results/
