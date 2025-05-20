@@ -1,0 +1,26 @@
+# model
+model_type: molmo
+disable_mm_preprocessor_cache: False  # If True, disables caching of multi-modal preprocessor/mapper.
+max_seq_len: 4096
+
+dtype: half
+tensor_parallel_size: 1
+
+temperature: 0.0  # Temperature for sampling.
+
+# dataset
+dataset: "/workspace/language_model/data/all_data.json"
+dataset_split: test
+load_local_image: True
+image_folder: "/workspace/multimodal_rewardbench/data/"
+modality: image
+
+swap: False
+
+seed: 123  # Set the seed when initializing `vllm.LLM`.
+num_prompts: 10
+data_chunk_size: 100
+start_idx: 0
+time_generate: True
+
+output_dir: results/
