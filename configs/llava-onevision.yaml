@@ -7,11 +7,18 @@ tensor_parallel_size: 1
 
 temperature: 0.0  # Temperature for sampling.
 
-dataset: "/workspace/language_model/data/all_data.json"
-dataset_split: test
-load_local_image: True
-image_folder: "/workspace/multimodal_rewardbench/data/"
-swap: False
+datasets:
+  - dataset_path: "/workspace/language_model/data/all_data.json"
+    dataset_name: "multimodal_rewardbench"
+    dataset_split: test
+    load_local_image: True
+    image_folder: "/workspace/multimodal_rewardbench/data/"
+    swap: False
+  - dataset_path: "MMInstruction/VL-RewardBench"
+    dataset_name: "vl_rewardbench"
+    dataset_split: test
+    load_local_image: False    
+    swap: False
 
 num_prompts: 10
 modality: image

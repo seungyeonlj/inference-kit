@@ -21,11 +21,11 @@ from dataclasses import asdict
 
 from vllm import LLM, SamplingParams
 
-from judge_model.models.vision_language_models import (
+from src.models.vision_language_models import (
     model_example_map,
     model_hf_map,
 )
-from judge_model.dataset.preprocessing import prepare_dataset
+from src.dataset.preprocessing import prepare_dataset
 
 
 def get_multi_modal_input(modality, args):
@@ -183,6 +183,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--config",
         type=str,
+        default="configs/llava-onevision.yaml",
         help="Path for YAML config file.",
     )
     args = parser.parse_args()

@@ -1,7 +1,7 @@
 import json
 
-from judge_model.dataset.vl_rewardbench import process_vl_rewardbench
-from judge_model.dataset.multimodal_rewardbench import process_multimodal_rewardbench
+from src.dataset.vl_rewardbench import process_vl_rewardbench
+from src.dataset.multimodal_rewardbench import process_multimodal_rewardbench
 
 dataset_func_map = {
     "multimodal_rewardbench": process_multimodal_rewardbench,
@@ -27,7 +27,6 @@ def prepare_dataset(args):
         dataset = load_dataset(
             dataset_hf_map[dataset_name], split=args["dataset_split"]
         )
-        dataset = dataset.to_list()
     else:
         assert "dataset_path" in args, "dataset_path is required for local dataset"
         dataset_path = args["dataset_path"]  # required for local dataset
