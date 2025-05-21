@@ -1,5 +1,6 @@
-# Copyright: Meta Platforms, Inc. and affiliates
-# A slightly modified version of the original code from https://github.com/facebookresearch/multimodal_rewardbench/blob/main/scripts/1_run_model_as_judge_gpt4o.py
+# ref: https://github.com/facebookresearch/multimodal_rewardbench/blob/main/scripts/1_run_model_as_judge_gpt4o.py
+# https://platform.openai.com/docs/guides/text?api-mode=responses&lang=python
+
 
 import json
 import argparse
@@ -72,26 +73,24 @@ class GPTModel(VisionLanguageModel):
             }
         ]
         for ex in example:
-            content = [{"type": "text", "text": ex["Text"]}]
+            content = [{"type": "input_text", "text": ex["Text"]}]
             image_path = ex.get("Image", None)
             if image_path:
                 image_url = self._local_image_to_data_url(image_path)
-                content.append({"type": "image_url", "image_url": {"url": image_url}})
+                content.append({"type": "input_image", "image_url": image_url})
             messages[0]["content"].extend(content)
 
         return messages
 
     def _call_client(self, messages, model):
-        completion = self.client.chat.completions.create(
+        response = self.client.responses.create(
             model=model,  # "gpt-4o-2024-08-06",  # "gpt-4o",
-            messages=messages,
-            max_tokens=1024,
+            input=messages,
+            # max_output_tokens=1024,
             temperature=1,  # default
             top_p=1,  # default
-            frequency_penalty=0,  # default
-            presence_penalty=0,  # default
         )
-        out = completion.to_dict()["choices"][0]["message"]["content"].strip()
+        out = response.output_text
         return out
 
     def _call_client_wrapper(self, messages, model, max_try=4):
@@ -108,14 +107,14 @@ class GPTModel(VisionLanguageModel):
         return "None"
 
     def generate(self, example: list[dict]):
-        """input = [{"Text": "", "Image": "Optional"}, ...]"""
+        """example = [{"Text": "", "Image": "Optional"}, ...]"""
         messages = self._get_messages(example)
         return self._call_client_wrapper(messages, self.model)
 
     def generate_data(self, examples: list[list[dict]], num_process: int = 1):
         """
-        input = [{"Text": "", "Image": "Optional"}, ...]
-        examples =[input1, input2, ...]
+        example = [{"Text": "", "Image": "Optional"}, ...]
+        examples =[example1, example2, ...]
         """
         with Pool(num_process) as p:
             outputs = list(
