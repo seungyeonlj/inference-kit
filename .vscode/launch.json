@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Debug vision_language.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/models/vision_language.py",
+      "args": [
+        "--config",
+        "configs/llava-onevision.yaml",
+      ],
+      "env": {
+        "PYTHONPATH": "/workspace/inference-kit"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Python: Debug run_api.py",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/src/run_api.py",
+      "args": [
+        "--config",
+        "configs/gpt-41.yaml",
+      ],
+      "env": {
+        "PYTHONPATH": "/workspace/inference-kit"
+      },
+      "console": "integratedTerminal"
+    }
+  ]
+}
