@@ -82,23 +82,24 @@ class GPTModel(VisionLanguageModel):
 
         return messages
 
-    def _call_client(self, messages, model):
+    def _call_client(self, messages, model, sampling_params):
+        if not sampling_params:
+            sampling_params = {"temperature": 0.0, "top_p": 1.0}
+
         response = self.client.responses.create(
             model=model,  # "gpt-4o-2024-08-06",  # "gpt-4o",
             input=messages,
-            # max_output_tokens=1024,
-            temperature=1,  # default
-            top_p=1,  # default
+            **sampling_params,
         )
         out = response.output_text
         return out
 
-    def _call_client_wrapper(self, messages, model, max_try=4):
+    def _call_client_wrapper(self, messages, model, max_try, sampling_params):
         """Wrapper to call the client with retry logic."""
         count = 1
         while count < max_try:
             try:
-                out = self._call_client(messages, model)
+                out = self._call_client(messages, model, sampling_params)
                 return out
             except Exception as e:
                 print("Exception:", e)
@@ -106,26 +107,20 @@ class GPTModel(VisionLanguageModel):
                 time.sleep(2)
         return "None"
 
-    def generate(self, example: list[dict]):
+    def generate(
+        self,
+        example: list[dict] | list[list[dict]],
+        max_try: int = 4,
+        sampling_params=None,
+    ):
         """example = [{"Text": "", "Image": "Optional"}, ...]"""
         messages = self._get_messages(example)
-        return self._call_client_wrapper(messages, self.model)
-
-    def generate_data(self, examples: list[list[dict]], num_process: int = 1):
-        """
-        example = [{"Text": "", "Image": "Optional"}, ...]
-        examples =[example1, example2, ...]
-        """
-        with Pool(num_process) as p:
-            outputs = list(
-                tqdm(
-                    p.imap(self.generate, examples),
-                    total=len(examples),
-                    desc=f"Running model with {num_process} processes",
-                )
-            )
-        assert len(outputs) == len(examples)
-        return outputs
+        return self._call_client_wrapper(
+            messages=messages,
+            model=self.model,
+            max_try=max_try,
+            sampling_params=sampling_params,
+        )
 
 
 class GPTToolModel(Model):
